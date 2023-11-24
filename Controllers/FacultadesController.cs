@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SophosUniversityApi.DataContracts;
 using SophosUniversityApi.DBContext;
 using SophosUniversityApi.Models;
 
@@ -62,14 +63,22 @@ namespace SophosUniversityApi.Controllers
 		// PUT: api/Facultades/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
-		public async Task<IActionResult> PutFacultad(int id, Facultad facultad)
+		public async Task<IActionResult> PutFacultad(int id, UpdateFacultadDTO facultad)
 		{
-			if (id != facultad.IdFacultad)
+			if (_context.Facultades == null)
 			{
-				return BadRequest();
+				return NotFound();
 			}
 
-			_context.Entry(facultad).State = EntityState.Modified;
+			var facultadToUpdate = await _context.Facultades.FindAsync(id);
+			if (facultadToUpdate == null)
+			{
+				return NotFound();
+			}
+
+			facultadToUpdate.Nombre = facultad.Nombre ?? facultadToUpdate.Nombre;
+
+			_context.Entry(facultadToUpdate).State = EntityState.Modified;
 
 			try
 			{
@@ -83,7 +92,7 @@ namespace SophosUniversityApi.Controllers
 				}
 				else
 				{
-					throw;
+					return Problem("Erro al actualizar Facultad");
 				}
 			}
 
@@ -93,16 +102,22 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Facultades
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
-		public async Task<ActionResult<Facultad>> PostFacultad(Facultad facultad)
+		public async Task<ActionResult<Facultad>> PostFacultad(CreateFacultadDTO facultad)
 		{
 			if (_context.Facultades == null)
 			{
 				return Problem("Entity set 'AppDbContext.Facultads'  is null.");
 			}
-			_context.Facultades.Add(facultad);
+
+			var nuevaFacultad = new Facultad
+			{
+				Nombre = facultad.Nombre
+			};
+
+			_context.Facultades.Add(nuevaFacultad);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetFacultad", new { id = facultad.IdFacultad }, facultad);
+			return CreatedAtAction("GetFacultad", new { id = nuevaFacultad.IdFacultad }, nuevaFacultad);
 		}
 
 		// DELETE: api/Facultades/5

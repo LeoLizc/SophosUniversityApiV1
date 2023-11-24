@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SophosUniversityApi.DataContracts;
 using SophosUniversityApi.DBContext;
 using SophosUniversityApi.Models;
 
@@ -23,7 +24,7 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Cursos
 		[HttpGet]
-		public async Task<ActionResult<IEnumerable<Curso>>> GetCursos(
+		public async Task<ActionResult<IEnumerable<CursoDTO>>> GetCursos(
 			[FromQuery(Name = "nombre")] string? nombre,//* Filtra por el nombre del estudiante
 			[FromQuery(Name = "cupos")] bool? cupos//* Filtra los cursos con cupos disponibles
 		)
@@ -45,12 +46,23 @@ namespace SophosUniversityApi.Controllers
 					c => (c.Cupos - _context.Inscripciones.Where(ins => ins.IdCurso == c.IdCurso).Count() > 0) == (bool)cupos
 				).ToList();
 			}
-			return Ok(cursos);
+
+			var result = cursos.Select(
+				c => new CursoDTO(
+					c.IdCurso,
+					c.Asignatura.Nombre,
+					c.Asignatura.PreRequisito?.Nombre ?? "",
+					c.Asignatura.Creditos,
+					c.Cupos - _context.Inscripciones.Where(ins => ins.IdCurso == c.IdCurso).Count()
+				)
+			);
+
+			return Ok(result);
 		}
 
 		// GET: api/Cursos/5
 		[HttpGet("{id}")]
-		public async Task<ActionResult<Curso>> GetCurso(int id)
+		public async Task<ActionResult<CursoDetailDTO>> GetCurso(int id)
 		{
 			if (_context.Cursos == null)
 			{
@@ -63,20 +75,39 @@ namespace SophosUniversityApi.Controllers
 				return NotFound();
 			}
 
-			return curso;
+			var result = new CursoDetailDTO(
+				curso.IdCurso,
+				curso.Periodo,
+				curso.Activo ?? false,
+				curso.Asignatura.Nombre,
+				_context.Inscripciones.Where(ins => ins.IdCurso == curso.IdCurso).Count(),
+				curso.Profesor.Nombre,
+				curso.Asignatura.Creditos,
+				_context.Inscripciones.Where(ins => ins.IdCurso == curso.IdCurso).Select(ins => ins.Estudiante.Nombre).ToList()
+			);
+
+			return Ok(result);
 		}
 
 		// PUT: api/Cursos/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
-		public async Task<IActionResult> PutCurso(int id, Curso curso)
+		public async Task<IActionResult> PutCurso(int id, UpdateCursoDTO curso)
 		{
-			if (id != curso.IdCurso)
+
+			if (_context.Cursos == null)
 			{
-				return BadRequest();
+				return NotFound();
 			}
 
-			_context.Entry(curso).State = EntityState.Modified;
+			var cursoToUpdate = await _context.Cursos.FindAsync(id);
+
+			if (cursoToUpdate == null)
+			{
+				return NotFound();
+			}
+
+			_context.Entry(cursoToUpdate).State = EntityState.Modified;
 
 			try
 			{
@@ -90,7 +121,7 @@ namespace SophosUniversityApi.Controllers
 				}
 				else
 				{
-					throw;
+					return Problem("Error updating entity.");
 				}
 			}
 
@@ -100,16 +131,26 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Cursos
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
-		public async Task<ActionResult<Curso>> PostCurso(Curso curso)
+		public async Task<ActionResult<Curso>> PostCurso(CreateCursoDTO curso)
 		{
 			if (_context.Cursos == null)
 			{
 				return Problem("Entity set 'AppDbContext.Cursos'  is null.");
 			}
-			_context.Cursos.Add(curso);
+
+			var nuevoCurso = new Curso()
+			{
+				Periodo = curso.Periodo ?? "Actual...",
+				Activo = curso.Activo ?? true,
+				Cupos = curso.Cupos,
+				IdAsignatura = curso.IdAsignatura,
+				IdProfesor = curso.IdProfesor
+			};
+
+			_context.Cursos.Add(nuevoCurso);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetCurso", new { id = curso.IdCurso }, curso);
+			return CreatedAtAction("GetCurso", new { id = nuevoCurso.IdCurso }, nuevoCurso);
 		}
 
 		// DELETE: api/Cursos/5

@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SophosUniversityApi.DataContracts;
 using SophosUniversityApi.DBContext;
 using SophosUniversityApi.Models;
 
@@ -24,16 +25,23 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Inscripciones
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
-		public async Task<ActionResult<Inscripcion>> PostInscripcion(Inscripcion inscripcion)
+		public async Task<ActionResult<Inscripcion>> PostInscripcion(CreateInscripcionDTO inscripcion)
 		{
 			if (_context.Inscripciones == null)
 			{
 				return Problem("Entity set 'AppDbContext.Inscripcions'  is null.");
 			}
-			_context.Inscripciones.Add(inscripcion);
+
+			var newInscripcion = new Inscripcion
+			{
+				IdCurso = inscripcion.IdCurso,
+				IdEstudiante = inscripcion.IdEstudiante
+			};
+
+			_context.Inscripciones.Add(newInscripcion);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetInscripcion", new { id = inscripcion.IdInscripcion }, inscripcion);
+			return CreatedAtAction("GetInscripcion", new { id = newInscripcion.IdInscripcion }, newInscripcion);
 		}
 
 		// DELETE: api/Inscripciones/5

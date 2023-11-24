@@ -5,21 +5,22 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using SophosUniversityApi.DataContracts;
 using SophosUniversityApi.DBContext;
 using SophosUniversityApi.Models;
 
 namespace SophosUniversityApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class AsignaturasController : ControllerBase
-    {
-        private readonly AppDbContext _context;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class AsignaturasController : ControllerBase
+	{
+		private readonly AppDbContext _context;
 
-        public AsignaturasController(AppDbContext context)
-        {
-            _context = context; 
-        }
+		public AsignaturasController(AppDbContext context)
+		{
+			_context = context;
+		}
 
 		/// <summary>
 		/// Get a list of alumnos with optional filtering by name and facultad.
@@ -28,104 +29,162 @@ namespace SophosUniversityApi.Controllers
 		/// <param name="facultad">The facultad to filter by.</param>
 		/// <returns>A list of alumnos.</returns>
 		[HttpGet]
-        public async Task<ActionResult<IEnumerable<Asignatura>>> GetAsignaturas(
-            [FromQuery(Name = "nombre")] string name
-        )
-        {
-          if (_context.Asignaturas == null)
-          {
-              return NotFound();
-          }
-            return await _context.Asignaturas.ToListAsync();
-        }
+		public async Task<ActionResult<IEnumerable<AsignaturaDTO>>> GetAsignaturas(
+			[FromQuery(Name = "nombre")] string? name
+		)
+		{
+			if (_context.Asignaturas == null)
+			{
+				return NotFound();
+			}
+			var asignaturas = await _context.Asignaturas.ToListAsync();
 
-        // GET: api/Asignaturas/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Asignatura>> GetAsignatura(int id)
-        {
-          if (_context.Asignaturas == null)
-          {
-              return NotFound();
-          }
-            var asignatura = await _context.Asignaturas.FindAsync(id);
+			if (name != null)
+			{
+				asignaturas = asignaturas.Where(a => a.Nombre.Contains(name)).ToList();
+			}
 
-            if (asignatura == null)
-            {
-                return NotFound();
-            }
+			var result = asignaturas.Select(
+				a => new AsignaturaDTO(
+					a.IdAsignatura, 
+					a.Nombre, 
+					a.Creditos
+				)
+			);
+			return Ok( result );
+		}
 
-            return asignatura;
-        }
+		// GET: api/Asignaturas/5
+		[HttpGet("{id}")]
+		public async Task<ActionResult<AsignaturaDetailDTO>> GetAsignatura(int id)
+		{
+			if (_context.Asignaturas == null)
+			{
+				return NotFound();
+			}
+			var asignatura = await _context.Asignaturas.FindAsync(id);
 
-        // PUT: api/Asignaturas/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutAsignatura(int id, Asignatura asignatura)
-        {
-            if (id != asignatura.IdAsignatura)
-            {
-                return BadRequest();
-            }
+			if (asignatura == null)
+			{
+				return NotFound();
+			}
 
-            _context.Entry(asignatura).State = EntityState.Modified;
+			return new AsignaturaDetailDTO(
+				asignatura.IdAsignatura,
+				asignatura.Nombre,
+				asignatura.Creditos,
+				asignatura.Facultad.Nombre,
+				asignatura.PreRequisito?.Nombre,
+				asignatura.Cursos.Select(
+					c => new CursoDTO(
+						c.IdCurso,
+						c.Asignatura.Nombre,
+						c.Asignatura.PreRequisito?.Nombre ?? "",
+						c.Asignatura.Creditos,
+						c.Cupos - c.Inscripciones.Count()
+					)
+				).ToList()
+			);
+		}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!AsignaturaExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+		// PUT: api/Asignaturas/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutAsignatura(int id, UpdateAsignaturaDTO asignatura)
+		{
 
-            return NoContent();
-        }
+			if (_context.Asignaturas == null)
+			{
+				return NotFound();
+			}
 
-        // POST: api/Asignaturas
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Asignatura>> PostAsignatura(Asignatura asignatura)
-        {
-          if (_context.Asignaturas == null)
-          {
-              return Problem("Entity set 'AppDbContext.Asignaturas'  is null.");
-          }
-            _context.Asignaturas.Add(asignatura);
-            await _context.SaveChangesAsync();
+			var asignaturaToUpdate = await _context.Asignaturas.FindAsync(id);
 
-            return CreatedAtAction("GetAsignatura", new { id = asignatura.IdAsignatura }, asignatura);
-        }
+			if (asignaturaToUpdate == null)
+			{
+				return NotFound();
+			}
 
-        // DELETE: api/Asignaturas/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteAsignatura(int id)
-        {
-            if (_context.Asignaturas == null)
-            {
-                return NotFound();
-            }
-            var asignatura = await _context.Asignaturas.FindAsync(id);
-            if (asignatura == null)
-            {
-                return NotFound();
-            }
+			asignaturaToUpdate.Nombre = asignatura.Nombre ?? asignaturaToUpdate.Nombre;
+			asignaturaToUpdate.Creditos = asignatura.Creditos ?? asignaturaToUpdate.Creditos;
+			asignaturaToUpdate.IdFacultad = asignatura.IdFacultad ?? asignaturaToUpdate.IdFacultad;
+			asignaturaToUpdate.IdPreRequisito = asignatura.IdPreRequisito ?? asignaturaToUpdate.IdPreRequisito;
 
-            _context.Asignaturas.Remove(asignatura);
-            await _context.SaveChangesAsync();
+			_context.Entry(asignaturaToUpdate).State = EntityState.Modified;
 
-            return NoContent();
-        }
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!AsignaturaExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					return Problem("Error updating entity.");
+				}
+			}
 
-        private bool AsignaturaExists(int id)
-        {
-            return (_context.Asignaturas?.Any(e => e.IdAsignatura == id)).GetValueOrDefault();
-        }
-    }
+			return NoContent();
+		}
+
+		// POST: api/Asignaturas
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
+		public async Task<ActionResult<Asignatura>> PostAsignatura(CreateAsignaturaDTO asignatura)
+		{
+			if (_context.Asignaturas == null)
+			{
+				return Problem("Entity set 'AppDbContext.Asignaturas'  is null.");
+			}
+
+			var nuevaAsignatura = new Asignatura
+			{
+				Nombre = asignatura.Nombre,
+				Creditos = asignatura.Creditos,
+				IdFacultad = asignatura.IdFacultad,
+				IdPreRequisito = asignatura.IdPreRequisito
+			};
+
+			try
+			{
+				_context.Asignaturas.Add(nuevaAsignatura);
+				await _context.SaveChangesAsync();
+			}
+			catch (Exception e)
+			{
+				return Problem(e.Message);
+			}
+
+			return CreatedAtAction("GetAsignatura", new { id = nuevaAsignatura.IdAsignatura }, nuevaAsignatura);
+		}
+
+		// DELETE: api/Asignaturas/5
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteAsignatura(int id)
+		{
+			if (_context.Asignaturas == null)
+			{
+				return NotFound();
+			}
+			var asignatura = await _context.Asignaturas.FindAsync(id);
+			if (asignatura == null)
+			{
+				return NotFound();
+			}
+
+			_context.Asignaturas.Remove(asignatura);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		private bool AsignaturaExists(int id)
+		{
+			return (_context.Asignaturas?.Any(e => e.IdAsignatura == id)).GetValueOrDefault();
+		}
+	}
 }
