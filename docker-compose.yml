@@ -7,8 +7,9 @@ services:
     build: .
     ports:
       - "5189:5189"
-    volumes:
-      - .:/app
+    environment:
+      - ASPNETCORE_URLS=http://+:5189
+      - ASPNETCORE_ENVIRONMENT=Development 
     networks:
       - mynetwork
 
@@ -17,10 +18,13 @@ services:
     ports:
       - "1433:1433"
     environment:
-      - SA_PASSWORD=00PrimeraPruebaPass1197
-      - ACCEPT_EULA=Y
-    volumes:
-      - ./Database/DatabaseFiles:/var/opt/mssql/data
+      MSSQL_SA_PASSWORD: 00PrimeraPruebaPass1197
+      ACCEPT_EULA: Y
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -x /opt/mssql-tools/bin/sqlcmd ]" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
     networks:
       - mynetwork
 
