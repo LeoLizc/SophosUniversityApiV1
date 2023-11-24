@@ -7,10 +7,6 @@ namespace SophosUniversityApi.DBContext;
 
 public partial class AppDbContext : DbContext
 {
-    public AppDbContext()
-    {
-    }
-
     public AppDbContext(DbContextOptions<AppDbContext> options)
         : base(options)
     {
@@ -28,15 +24,11 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Profesor> Profesors { get; set; }
 
-    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-#warning To protect potentially sensitive information in your connection string, you should move it out of source code. You can avoid scaffolding the connection string by using the Name= syntax to read it from configuration - see https://go.microsoft.com/fwlink/?linkid=2131148. For more guidance on storing connection strings, see http://go.microsoft.com/fwlink/?LinkId=723263.
-        {}
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Asignatura>(entity =>
         {
-            entity.HasKey(e => e.IdAsignatura).HasName("PK__Asignatu__33A22F4C5E437B48");
+            entity.HasKey(e => e.IdAsignatura).HasName("PK__Asignatu__33A22F4C2D86B1FF");
 
             entity.ToTable("Asignatura");
 
@@ -54,27 +46,25 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Asignatur__id_fa__3E52440B");
 
-            entity.HasOne(d => d.IdPreRequisitoNavigation)
-                .WithMany(p => p.InverseIdPreRequisitoNavigation)
+            entity.HasOne(d => d.IdPreRequisitoNavigation).WithMany(p => p.InverseIdPreRequisitoNavigation)
                 .HasForeignKey(d => d.IdPreRequisito)
                 .HasConstraintName("FK__Asignatur__id_pr__3F466844");
         });
 
         modelBuilder.Entity<Curso>(entity =>
         {
-            entity.HasKey(e => e.IdCurso).HasName("PK__Curso__5D3F7502820D2E8E");
+            entity.HasKey(e => e.IdCurso).HasName("PK__Curso__5D3F7502CB96F82E");
 
             entity.ToTable("Curso");
 
             entity.Property(e => e.IdCurso).HasColumnName("id_curso");
+            entity.Property(e => e.Activo)
+                .IsRequired()
+                .HasDefaultValueSql("((1))")
+                .HasColumnName("activo");
             entity.Property(e => e.Cupos).HasColumnName("cupos");
-            entity.Property(e => e.CuposDisponibles).HasColumnName("cupos_disponibles");
             entity.Property(e => e.IdAsignatura).HasColumnName("id_asignatura");
             entity.Property(e => e.IdProfesor).HasColumnName("id_profesor");
-            entity.Property(e => e.Nombre)
-                .HasMaxLength(50)
-                .IsUnicode(false)
-                .HasColumnName("nombre");
             entity.Property(e => e.Periodo)
                 .HasMaxLength(50)
                 .IsUnicode(false)
@@ -83,17 +73,17 @@ public partial class AppDbContext : DbContext
             entity.HasOne(d => d.IdAsignaturaNavigation).WithMany(p => p.Cursos)
                 .HasForeignKey(d => d.IdAsignatura)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Curso__id_asigna__4222D4EF");
+                .HasConstraintName("FK__Curso__id_asigna__4316F928");
 
             entity.HasOne(d => d.IdProfesorNavigation).WithMany(p => p.Cursos)
                 .HasForeignKey(d => d.IdProfesor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
-                .HasConstraintName("FK__Curso__id_profes__4316F928");
+                .HasConstraintName("FK__Curso__id_profes__440B1D61");
         });
 
         modelBuilder.Entity<Estudiante>(entity =>
         {
-            entity.HasKey(e => e.IdEstudiante).HasName("PK__Estudian__E0B2763C959B1F7C");
+            entity.HasKey(e => e.IdEstudiante).HasName("PK__Estudian__E0B2763CC12AEB2A");
 
             entity.ToTable("Estudiante");
 
@@ -115,7 +105,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Facultad>(entity =>
         {
-            entity.HasKey(e => e.IdFacultad).HasName("PK__Facultad__B583ABCE45A388E0");
+            entity.HasKey(e => e.IdFacultad).HasName("PK__Facultad__B583ABCE3D8AEFB2");
 
             entity.ToTable("Facultad");
 
@@ -128,7 +118,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Inscripcion>(entity =>
         {
-            entity.HasKey(e => e.IdInscripcion).HasName("PK__Inscripc__CB0117BA4C24C164");
+            entity.HasKey(e => e.IdInscripcion).HasName("PK__Inscripc__CB0117BAACEBDFC2");
 
             entity.ToTable("Inscripcion");
 
@@ -149,7 +139,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Profesor>(entity =>
         {
-            entity.HasKey(e => e.IdProfesor).HasName("PK__Profesor__159ED617B147C404");
+            entity.HasKey(e => e.IdProfesor).HasName("PK__Profesor__159ED61743CBDD7C");
 
             entity.ToTable("Profesor");
 
