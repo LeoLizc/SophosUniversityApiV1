@@ -28,7 +28,7 @@ public partial class AppDbContext : DbContext
     {
         modelBuilder.Entity<Asignatura>(entity =>
         {
-            entity.HasKey(e => e.IdAsignatura).HasName("PK__Asignatu__33A22F4C2D86B1FF");
+            entity.HasKey(e => e.IdAsignatura).HasName("PK__Asignatu__33A22F4C97F6A9C8");
 
             entity.ToTable("Asignatura");
 
@@ -46,14 +46,14 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Asignatur__id_fa__3E52440B");
 
-            entity.HasOne(d => d.PreRequisito).WithMany(p => p.CursosDependientes)
+            entity.HasOne(d => d.PreRequisito).WithMany(p => p.AsignaturasDependientes)
                 .HasForeignKey(d => d.IdPreRequisito)
                 .HasConstraintName("FK__Asignatur__id_pr__3F466844");
         });
 
         modelBuilder.Entity<Curso>(entity =>
         {
-            entity.HasKey(e => e.IdCurso).HasName("PK__Curso__5D3F7502CB96F82E");
+            entity.HasKey(e => e.IdCurso).HasName("PK__Curso__5D3F7502DAE9D66E");
 
             entity.ToTable("Curso");
 
@@ -83,12 +83,11 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Estudiante>(entity =>
         {
-            entity.HasKey(e => e.IdEstudiante).HasName("PK__Estudian__E0B2763CC12AEB2A");
+            entity.HasKey(e => e.IdEstudiante).HasName("PK__Estudian__E0B2763CBAF4FB35");
 
             entity.ToTable("Estudiante");
 
             entity.Property(e => e.IdEstudiante).HasColumnName("id_estudiante");
-            entity.Property(e => e.CreditosInscritos).HasColumnName("creditos_inscritos");
             entity.Property(e => e.Edad).HasColumnName("edad");
             entity.Property(e => e.IdFacultad).HasColumnName("id_facultad");
             entity.Property(e => e.Nombre)
@@ -105,7 +104,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Facultad>(entity =>
         {
-            entity.HasKey(e => e.IdFacultad).HasName("PK__Facultad__B583ABCE3D8AEFB2");
+            entity.HasKey(e => e.IdFacultad).HasName("PK__Facultad__B583ABCE0E25B350");
 
             entity.ToTable("Facultad");
 
@@ -118,7 +117,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Inscripcion>(entity =>
         {
-            entity.HasKey(e => e.IdInscripcion).HasName("PK__Inscripc__CB0117BAACEBDFC2");
+            entity.HasKey(e => e.IdInscripcion).HasName("PK__Inscripc__CB0117BA6F317A53");
 
             entity.ToTable("Inscripcion");
 
@@ -139,7 +138,7 @@ public partial class AppDbContext : DbContext
 
         modelBuilder.Entity<Profesor>(entity =>
         {
-            entity.HasKey(e => e.IdProfesor).HasName("PK__Profesor__159ED61743CBDD7C");
+            entity.HasKey(e => e.IdProfesor).HasName("PK__Profesor__159ED617E377D4A5");
 
             entity.ToTable("Profesor");
 

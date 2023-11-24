@@ -11,8 +11,6 @@ public partial class Estudiante
 
     public int Edad { get; set; }
 
-    public int CreditosInscritos { get; set; }
-
     public int SemestreActual { get; set; }
 
     public int IdFacultad { get; set; }
