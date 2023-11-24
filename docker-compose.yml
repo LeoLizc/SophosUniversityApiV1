@@ -1,0 +1,28 @@
+version: '3.1'
+
+services:
+  backend:
+    depends_on:
+      - db
+    build: .
+    ports:
+      - "5189:5189"
+    volumes:
+      - .:/app
+    networks:
+      - mynetwork
+
+  db: #The Sql server Dockerfile is inside Database folder
+    build: ./Database
+    ports:
+      - "1433:1433"
+    environment:
+      - SA_PASSWORD=00PrimeraPruebaPass1197
+      - ACCEPT_EULA=Y
+    volumes:
+      - ./Database/DatabaseFiles:/var/opt/mssql/data
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
