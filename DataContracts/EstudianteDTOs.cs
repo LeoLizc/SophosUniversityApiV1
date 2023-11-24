@@ -19,7 +19,7 @@ namespace SophosUniversityApi.DataContracts
 	public record EstudianteDTO(
 		int IdEstudiante,
 		string Nombre,
-		int Facultad,
+		string Facultad,
 		int CreditosInscritos,
 		int Edad
 	);
