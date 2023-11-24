@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  sql-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "1433:1433"
+    environment:
+      MSSQL_SA_PASSWORD: 00PrimeraPruebaPass1197
+      ACCEPT_EULA: Y
+    healthcheck:
+      test: [ "CMD-SHELL", "[ -x /opt/mssql-tools/bin/sqlcmd ]" ]
+      interval: 10s
+      timeout: 5s
+      retries: 3
