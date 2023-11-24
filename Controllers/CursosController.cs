@@ -32,17 +32,20 @@ namespace SophosUniversityApi.Controllers
 			{
 				return NotFound();
 			}
-			var cursos = _context.Cursos.AsQueryable();
+			var cursos = await _context.Cursos.ToListAsync();
 
 			if (nombre != null)
 			{
-				cursos = cursos.Where(c => c.Asignatura.Nombre.Contains(nombre));
+				cursos = cursos.Where(c => c.Asignatura.Nombre.Contains(nombre)).ToList();
 			}
 
 			if (cupos != null)
 			{
-				cursos = cursos.Where(c => c.Cupos - _context.Inscripciones );
+				cursos = cursos.Where(
+					c => (c.Cupos - _context.Inscripciones.Where(ins => ins.IdCurso == c.IdCurso).Count() > 0) == (bool)cupos
+				).ToList();
 			}
+			return Ok(cursos);
 		}
 
 		// GET: api/Cursos/5

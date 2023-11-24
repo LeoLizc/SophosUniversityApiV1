@@ -9,6 +9,7 @@ public partial class Facultad
 
     public string Nombre { get; set; } = null!;
 
+    [System.Text.Json.Serialization.JsonIgnore]
     public virtual ICollection<Asignatura> Asignaturas { get; set; } = new List<Asignatura>();
 
     public virtual ICollection<Estudiante> Estudiantes { get; set; } = new List<Estudiante>();

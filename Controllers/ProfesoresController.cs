@@ -10,115 +10,125 @@ using SophosUniversityApi.Models;
 
 namespace SophosUniversityApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class ProfesoresController : ControllerBase
-    {
-        private readonly AppDbContext _context;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class ProfesoresController : ControllerBase
+	{
+		private readonly AppDbContext _context;
 
-        public ProfesoresController(AppDbContext context)
-        {
-            _context = context;
-        }
+		public ProfesoresController(AppDbContext context)
+		{
+			_context = context;
+		}
 
-        // GET: api/Profesores
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Profesor>>> GetProfesors()
-        {
-          if (_context.Profesores == null)
-          {
-              return NotFound();
-          }
-            return await _context.Profesores.ToListAsync();
-        }
+		// GET: api/Profesores
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Profesor>>> GetProfesores(
+			[FromQuery(Name = "nombre")] string? nombre
+		)
+		{
+			if (_context.Profesores == null)
+			{
+				return NotFound();
+			}
 
-        // GET: api/Profesores/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Profesor>> GetProfesor(int id)
-        {
-          if (_context.Profesores == null)
-          {
-              return NotFound();
-          }
-            var profesor = await _context.Profesores.FindAsync(id);
+			var profesores = await _context.Profesores.ToListAsync();
 
-            if (profesor == null)
-            {
-                return NotFound();
-            }
+			if (nombre != null)
+			{
+				profesores = profesores.Where(p => p.Nombre.Contains(nombre)).ToList();
+			}
 
-            return profesor;
-        }
+			return profesores;
+		}
 
-        // PUT: api/Profesores/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutProfesor(int id, Profesor profesor)
-        {
-            if (id != profesor.IdProfesor)
-            {
-                return BadRequest();
-            }
+		// GET: api/Profesores/5
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Profesor>> GetProfesor(int id)
+		{
+			if (_context.Profesores == null)
+			{
+				return NotFound();
+			}
+			var profesor = await _context.Profesores.FindAsync(id);
 
-            _context.Entry(profesor).State = EntityState.Modified;
+			if (profesor == null)
+			{
+				return NotFound();
+			}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!ProfesorExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+			return profesor;
+		}
 
-            return NoContent();
-        }
+		// PUT: api/Profesores/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutProfesor(int id, Profesor profesor)
+		{
+			if (id != profesor.IdProfesor)
+			{
+				return BadRequest();
+			}
 
-        // POST: api/Profesores
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Profesor>> PostProfesor(Profesor profesor)
-        {
-          if (_context.Profesores == null)
-          {
-              return Problem("Entity set 'AppDbContext.Profesors'  is null.");
-          }
-            _context.Profesores.Add(profesor);
-            await _context.SaveChangesAsync();
+			_context.Entry(profesor).State = EntityState.Modified;
 
-            return CreatedAtAction("GetProfesor", new { id = profesor.IdProfesor }, profesor);
-        }
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!ProfesorExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
 
-        // DELETE: api/Profesores/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteProfesor(int id)
-        {
-            if (_context.Profesores == null)
-            {
-                return NotFound();
-            }
-            var profesor = await _context.Profesores.FindAsync(id);
-            if (profesor == null)
-            {
-                return NotFound();
-            }
+			return NoContent();
+		}
 
-            _context.Profesores.Remove(profesor);
-            await _context.SaveChangesAsync();
+		// POST: api/Profesores
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
+		public async Task<ActionResult<Profesor>> PostProfesor(Profesor profesor)
+		{
+			if (_context.Profesores == null)
+			{
+				return Problem("Entity set 'AppDbContext.Profesors'  is null.");
+			}
+			_context.Profesores.Add(profesor);
+			await _context.SaveChangesAsync();
 
-            return NoContent();
-        }
+			return CreatedAtAction("GetProfesor", new { id = profesor.IdProfesor }, profesor);
+		}
 
-        private bool ProfesorExists(int id)
-        {
-            return (_context.Profesores?.Any(e => e.IdProfesor == id)).GetValueOrDefault();
-        }
-    }
+		// DELETE: api/Profesores/5
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteProfesor(int id)
+		{
+			if (_context.Profesores == null)
+			{
+				return NotFound();
+			}
+			var profesor = await _context.Profesores.FindAsync(id);
+			if (profesor == null)
+			{
+				return NotFound();
+			}
+
+			_context.Profesores.Remove(profesor);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		private bool ProfesorExists(int id)
+		{
+			return (_context.Profesores?.Any(e => e.IdProfesor == id)).GetValueOrDefault();
+		}
+	}
 }

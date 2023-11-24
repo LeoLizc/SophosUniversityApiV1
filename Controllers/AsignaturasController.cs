@@ -18,12 +18,19 @@ namespace SophosUniversityApi.Controllers
 
         public AsignaturasController(AppDbContext context)
         {
-            _context = context;
+            _context = context; 
         }
 
-        // GET: api/Asignaturas
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Asignatura>>> GetAsignaturas()
+		/// <summary>
+		/// Get a list of alumnos with optional filtering by name and facultad.
+		/// </summary>
+		/// <param name="name">The name of the alumno to filter by.</param>
+		/// <param name="facultad">The facultad to filter by.</param>
+		/// <returns>A list of alumnos.</returns>
+		[HttpGet]
+        public async Task<ActionResult<IEnumerable<Asignatura>>> GetAsignaturas(
+            [FromQuery(Name = "nombre")] string name
+        )
         {
           if (_context.Asignaturas == null)
           {

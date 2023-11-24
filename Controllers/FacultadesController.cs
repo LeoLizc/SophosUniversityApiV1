@@ -10,115 +10,124 @@ using SophosUniversityApi.Models;
 
 namespace SophosUniversityApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class FacultadesController : ControllerBase
-    {
-        private readonly AppDbContext _context;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class FacultadesController : ControllerBase
+	{
+		private readonly AppDbContext _context;
 
-        public FacultadesController(AppDbContext context)
-        {
-            _context = context;
-        }
+		public FacultadesController(AppDbContext context)
+		{
+			_context = context;
+		}
 
-        // GET: api/Facultades
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Facultad>>> GetFacultads()
-        {
-          if (_context.Facultades == null)
-          {
-              return NotFound();
-          }
-            return await _context.Facultades.ToListAsync();
-        }
+		// GET: api/Facultades
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Facultad>>> GetFacultades(
+			[FromQuery(Name = "nombre")] string? nombre
+		)
+		{
+			if (_context.Facultades == null)
+			{
+				return NotFound();
+			}
+			var facultades = await _context.Facultades.ToListAsync();
 
-        // GET: api/Facultades/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Facultad>> GetFacultad(int id)
-        {
-          if (_context.Facultades == null)
-          {
-              return NotFound();
-          }
-            var facultad = await _context.Facultades.FindAsync(id);
+			if (nombre != null)
+			{
+				facultades = facultades.Where(p => p.Nombre.Contains(nombre)).ToList();
+			}
 
-            if (facultad == null)
-            {
-                return NotFound();
-            }
+			return facultades;
+		}
 
-            return facultad;
-        }
+		// GET: api/Facultades/5
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Facultad>> GetFacultad(int id)
+		{
+			if (_context.Facultades == null)
+			{
+				return NotFound();
+			}
+			var facultad = await _context.Facultades.FindAsync(id);
 
-        // PUT: api/Facultades/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutFacultad(int id, Facultad facultad)
-        {
-            if (id != facultad.IdFacultad)
-            {
-                return BadRequest();
-            }
+			if (facultad == null)
+			{
+				return NotFound();
+			}
 
-            _context.Entry(facultad).State = EntityState.Modified;
+			return facultad;
+		}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!FacultadExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+		// PUT: api/Facultades/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutFacultad(int id, Facultad facultad)
+		{
+			if (id != facultad.IdFacultad)
+			{
+				return BadRequest();
+			}
 
-            return NoContent();
-        }
+			_context.Entry(facultad).State = EntityState.Modified;
 
-        // POST: api/Facultades
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Facultad>> PostFacultad(Facultad facultad)
-        {
-          if (_context.Facultades == null)
-          {
-              return Problem("Entity set 'AppDbContext.Facultads'  is null.");
-          }
-            _context.Facultades.Add(facultad);
-            await _context.SaveChangesAsync();
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!FacultadExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
 
-            return CreatedAtAction("GetFacultad", new { id = facultad.IdFacultad }, facultad);
-        }
+			return NoContent();
+		}
 
-        // DELETE: api/Facultades/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteFacultad(int id)
-        {
-            if (_context.Facultades == null)
-            {
-                return NotFound();
-            }
-            var facultad = await _context.Facultades.FindAsync(id);
-            if (facultad == null)
-            {
-                return NotFound();
-            }
+		// POST: api/Facultades
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
+		public async Task<ActionResult<Facultad>> PostFacultad(Facultad facultad)
+		{
+			if (_context.Facultades == null)
+			{
+				return Problem("Entity set 'AppDbContext.Facultads'  is null.");
+			}
+			_context.Facultades.Add(facultad);
+			await _context.SaveChangesAsync();
 
-            _context.Facultades.Remove(facultad);
-            await _context.SaveChangesAsync();
+			return CreatedAtAction("GetFacultad", new { id = facultad.IdFacultad }, facultad);
+		}
 
-            return NoContent();
-        }
+		// DELETE: api/Facultades/5
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteFacultad(int id)
+		{
+			if (_context.Facultades == null)
+			{
+				return NotFound();
+			}
+			var facultad = await _context.Facultades.FindAsync(id);
+			if (facultad == null)
+			{
+				return NotFound();
+			}
 
-        private bool FacultadExists(int id)
-        {
-            return (_context.Facultades?.Any(e => e.IdFacultad == id)).GetValueOrDefault();
-        }
-    }
+			_context.Facultades.Remove(facultad);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		private bool FacultadExists(int id)
+		{
+			return (_context.Facultades?.Any(e => e.IdFacultad == id)).GetValueOrDefault();
+		}
+	}
 }
