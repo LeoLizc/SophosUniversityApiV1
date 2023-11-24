@@ -24,6 +24,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Estudiantes
 		[HttpGet]
+		[ProducesResponseType(typeof(IEnumerable<EstudianteDTO>),StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<IEnumerable<EstudianteDTO>>> GetEstudiantes(
 			[FromQuery(Name = "nombre")] string? nombre,
 			[FromQuery(Name = "facultad")] string? facultad
@@ -63,6 +66,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Estudiantes/5
 		[HttpGet("{id}")]
+		[ProducesResponseType(typeof(EstudianteDetailDTO),StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<EstudianteDetailDTO>> GetEstudiante(int id)
 		{
 			if (_context.Estudiantes == null)
@@ -102,6 +108,9 @@ namespace SophosUniversityApi.Controllers
 		// PUT: api/Estudiantes/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> PutEstudiante(int id, UpdateEstudianteDTO estudiante)
 		{
 
@@ -136,6 +145,9 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Estudiantes
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
+		[ProducesResponseType(typeof(Estudiante),StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Estudiante>> PostEstudiante(CreateEstudianteDTO estudiante)
 		{
 			if (_context.Estudiantes == null)
@@ -164,6 +176,9 @@ namespace SophosUniversityApi.Controllers
 
 		// DELETE: api/Estudiantes/5
 		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DeleteEstudiante(int id)
 		{
 			if (_context.Estudiantes == null)

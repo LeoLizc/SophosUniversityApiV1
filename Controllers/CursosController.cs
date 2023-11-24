@@ -24,6 +24,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Cursos
 		[HttpGet]
+		[ProducesResponseType(typeof(IEnumerable<CursoDTO>), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<IEnumerable<CursoDTO>>> GetCursos(
 			[FromQuery(Name = "nombre")] string? nombre,//* Filtra por el nombre del estudiante
 			[FromQuery(Name = "cupos")] bool? cupos//* Filtra los cursos con cupos disponibles
@@ -62,6 +65,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Cursos/5
 		[HttpGet("{id}")]
+		[ProducesResponseType(typeof(CursoDetailDTO), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<CursoDetailDTO>> GetCurso(int id)
 		{
 			if (_context.Cursos == null)
@@ -92,6 +98,9 @@ namespace SophosUniversityApi.Controllers
 		// PUT: api/Cursos/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> PutCurso(int id, UpdateCursoDTO curso)
 		{
 
@@ -131,6 +140,9 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Cursos
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
+		[ProducesResponseType(typeof(Curso), StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Curso>> PostCurso(CreateCursoDTO curso)
 		{
 			if (_context.Cursos == null)
@@ -155,6 +167,9 @@ namespace SophosUniversityApi.Controllers
 
 		// DELETE: api/Cursos/5
 		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DeleteCurso(int id)
 		{
 			if (_context.Cursos == null)

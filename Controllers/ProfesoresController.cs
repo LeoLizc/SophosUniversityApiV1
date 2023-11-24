@@ -24,6 +24,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Profesores
 		[HttpGet]
+		[ProducesResponseType(typeof(IEnumerable<ProfesorDTO>), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<IEnumerable<ProfesorDTO>>> GetProfesores(
 			[FromQuery(Name = "nombre")] string? nombre
 		)
@@ -32,29 +35,38 @@ namespace SophosUniversityApi.Controllers
 			{
 				return NotFound();
 			}
-
-			var profesores = await _context.Profesores.ToListAsync();
-
-			if (nombre != null)
+			try
 			{
-				profesores = profesores.Where(p => p.Nombre.Contains(nombre)).ToList();
-			}
+				var profesores = await _context.Profesores.ToListAsync();
 
-			var result = profesores.Select(
-				prof => new ProfesorDTO(
-					prof.IdProfesor,
-					prof.Nombre,
-					prof.TituloMaximo,
-					prof.AniosExperiencia,
-					prof.Cursos.Select(cu => cu.Asignatura.Nombre).ToList()
-				)
-			);
-			return Ok(result);
+				if (nombre != null)
+				{
+					profesores = profesores.Where(p => p.Nombre.Contains(nombre)).ToList();
+				}
+
+				var result = profesores.Select(
+					prof => new ProfesorDTO(
+						prof.IdProfesor,
+						prof.Nombre,
+						prof.TituloMaximo,
+						prof.AniosExperiencia,
+						prof.Cursos.Select(cu => cu.Asignatura.Nombre).ToList()
+					)
+				);
+				return Ok(result);
+			}
+			catch (Exception e)
+			{
+				return Problem("Error obteniendo profesores");
+			}
 		}
 
 		// PUT: api/Profesores/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> PutProfesor(int id, UpdateProfesorDTO profesor)
 		{
 
@@ -83,7 +95,7 @@ namespace SophosUniversityApi.Controllers
 				}
 				else
 				{
-					throw;
+					return Problem("Error updating entity.");
 				}
 			}
 
@@ -93,6 +105,9 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Profesores
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
+		[ProducesResponseType(typeof(Profesor), StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Profesor>> PostProfesor(CreateProfesorDTO profesor)
 		{
 			if (_context.Profesores == null)
@@ -116,7 +131,8 @@ namespace SophosUniversityApi.Controllers
 					"GetProfesor",
 					newProfesor
 				);
-			} catch (DbUpdateConcurrencyException)
+			}
+			catch (DbUpdateConcurrencyException)
 			{
 				return Problem("Error al crear el profesor.");
 			}
@@ -124,6 +140,9 @@ namespace SophosUniversityApi.Controllers
 
 		// DELETE: api/Profesores/5
 		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DeleteProfesor(int id)
 		{
 			if (_context.Profesores == null)

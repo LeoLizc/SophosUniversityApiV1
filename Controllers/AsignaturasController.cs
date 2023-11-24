@@ -22,13 +22,10 @@ namespace SophosUniversityApi.Controllers
 			_context = context;
 		}
 
-		/// <summary>
-		/// Get a list of alumnos with optional filtering by name and facultad.
-		/// </summary>
-		/// <param name="name">The name of the alumno to filter by.</param>
-		/// <param name="facultad">The facultad to filter by.</param>
-		/// <returns>A list of alumnos.</returns>
 		[HttpGet]
+		[ProducesResponseType(typeof(IEnumerable<AsignaturaDTO>), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<IEnumerable<AsignaturaDTO>>> GetAsignaturas(
 			[FromQuery(Name = "nombre")] string? name
 		)
@@ -56,6 +53,9 @@ namespace SophosUniversityApi.Controllers
 
 		// GET: api/Asignaturas/5
 		[HttpGet("{id}")]
+		[ProducesResponseType(typeof(AsignaturaDetailDTO), StatusCodes.Status200OK)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<AsignaturaDetailDTO>> GetAsignatura(int id)
 		{
 			if (_context.Asignaturas == null)
@@ -90,6 +90,9 @@ namespace SophosUniversityApi.Controllers
 		// PUT: api/Asignaturas/5
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPut("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> PutAsignatura(int id, UpdateAsignaturaDTO asignatura)
 		{
 
@@ -134,6 +137,9 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Asignaturas
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
+		[ProducesResponseType(typeof(Asignatura), StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Asignatura>> PostAsignatura(CreateAsignaturaDTO asignatura)
 		{
 			if (_context.Asignaturas == null)
@@ -164,6 +170,9 @@ namespace SophosUniversityApi.Controllers
 
 		// DELETE: api/Asignaturas/5
 		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<IActionResult> DeleteAsignatura(int id)
 		{
 			if (_context.Asignaturas == null)

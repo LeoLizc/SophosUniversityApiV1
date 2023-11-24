@@ -25,6 +25,9 @@ namespace SophosUniversityApi.Controllers
 		// POST: api/Inscripciones
 		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
 		[HttpPost]
+		[ProducesResponseType(typeof(Inscripcion),StatusCodes.Status201Created)]
+		[ProducesResponseType(StatusCodes.Status400BadRequest)]
+		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<Inscripcion>> PostInscripcion(CreateInscripcionDTO inscripcion)
 		{
 			if (_context.Inscripciones == null)
@@ -46,6 +49,8 @@ namespace SophosUniversityApi.Controllers
 
 		// DELETE: api/Inscripciones/5
 		[HttpDelete("{id}")]
+		[ProducesResponseType(StatusCodes.Status204NoContent)]
+		[ProducesResponseType(StatusCodes.Status404NotFound)]
 		public async Task<IActionResult> DeleteInscripcion(int id)
 		{
 			if (_context.Inscripciones == null)
@@ -62,11 +67,6 @@ namespace SophosUniversityApi.Controllers
 			await _context.SaveChangesAsync();
 
 			return NoContent();
-		}
-
-		private bool InscripcionExists(int id)
-		{
-			return (_context.Inscripciones?.Any(e => e.IdInscripcion == id)).GetValueOrDefault();
 		}
 	}
 }
