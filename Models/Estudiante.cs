@@ -17,7 +17,7 @@ public partial class Estudiante
 
     public int IdFacultad { get; set; }
 
-    public virtual Facultad IdFacultadNavigation { get; set; } = null!;
+    public virtual Facultad Facultad { get; set; } = null!;
 
-    public virtual ICollection<Inscripcion> Inscripcions { get; set; } = new List<Inscripcion>();
+    public virtual ICollection<Inscripcion> Inscripciones { get; set; } = new List<Inscripcion>();
 }

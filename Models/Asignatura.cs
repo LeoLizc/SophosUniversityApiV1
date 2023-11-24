@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace SophosUniversityApi.Models;
 
@@ -17,9 +18,10 @@ public partial class Asignatura
 
     public virtual ICollection<Curso> Cursos { get; set; } = new List<Curso>();
 
-    public virtual Facultad IdFacultadNavigation { get; set; } = null!;
+    public virtual Facultad Facultad { get; set; } = null!;
 
-    public virtual Asignatura? IdPreRequisitoNavigation { get; set; }
+    public virtual Asignatura? PreRequisito { get; set; }
 
-    public virtual ICollection<Asignatura> InverseIdPreRequisitoNavigation { get; set; } = new List<Asignatura>();
+    [JsonIgnore]
+    public virtual ICollection<Asignatura> CursosDependientes { get; set; } = new List<Asignatura>();
 }

@@ -11,7 +11,7 @@ public partial class Inscripcion
 
     public int IdCurso { get; set; }
 
-    public virtual Curso IdCursoNavigation { get; set; } = null!;
+    public virtual Curso Curso { get; set; } = null!;
 
-    public virtual Estudiante IdEstudianteNavigation { get; set; } = null!;
+    public virtual Estudiante Estudiante { get; set; } = null!;
 }

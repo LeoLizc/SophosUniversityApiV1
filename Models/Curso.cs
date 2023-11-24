@@ -17,9 +17,9 @@ public partial class Curso
 
     public bool? Activo { get; set; }
 
-    public virtual Asignatura IdAsignaturaNavigation { get; set; } = null!;
+    public virtual Asignatura Asignatura { get; set; } = null!;
 
-    public virtual Profesor IdProfesorNavigation { get; set; } = null!;
+    public virtual Profesor Profesor { get; set; } = null!;
 
-    public virtual ICollection<Inscripcion> Inscripcions { get; set; } = new List<Inscripcion>();
+    public virtual ICollection<Inscripcion> Inscripciones { get; set; } = new List<Inscripcion>();
 }

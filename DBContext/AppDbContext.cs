@@ -41,12 +41,12 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("nombre");
 
-            entity.HasOne(d => d.IdFacultadNavigation).WithMany(p => p.Asignaturas)
+            entity.HasOne(d => d.Facultad).WithMany(p => p.Asignaturas)
                 .HasForeignKey(d => d.IdFacultad)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Asignatur__id_fa__3E52440B");
 
-            entity.HasOne(d => d.IdPreRequisitoNavigation).WithMany(p => p.InverseIdPreRequisitoNavigation)
+            entity.HasOne(d => d.PreRequisito).WithMany(p => p.CursosDependientes)
                 .HasForeignKey(d => d.IdPreRequisito)
                 .HasConstraintName("FK__Asignatur__id_pr__3F466844");
         });
@@ -70,12 +70,12 @@ public partial class AppDbContext : DbContext
                 .IsUnicode(false)
                 .HasColumnName("periodo");
 
-            entity.HasOne(d => d.IdAsignaturaNavigation).WithMany(p => p.Cursos)
+            entity.HasOne(d => d.Asignatura).WithMany(p => p.Cursos)
                 .HasForeignKey(d => d.IdAsignatura)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Curso__id_asigna__4316F928");
 
-            entity.HasOne(d => d.IdProfesorNavigation).WithMany(p => p.Cursos)
+            entity.HasOne(d => d.Profesor).WithMany(p => p.Cursos)
                 .HasForeignKey(d => d.IdProfesor)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Curso__id_profes__440B1D61");
@@ -97,7 +97,7 @@ public partial class AppDbContext : DbContext
                 .HasColumnName("nombre");
             entity.Property(e => e.SemestreActual).HasColumnName("semestre_actual");
 
-            entity.HasOne(d => d.IdFacultadNavigation).WithMany(p => p.Estudiantes)
+            entity.HasOne(d => d.Facultad).WithMany(p => p.Estudiantes)
                 .HasForeignKey(d => d.IdFacultad)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Estudiant__id_fa__3B75D760");
@@ -126,12 +126,12 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.IdCurso).HasColumnName("id_curso");
             entity.Property(e => e.IdEstudiante).HasColumnName("id_estudiante");
 
-            entity.HasOne(d => d.IdCursoNavigation).WithMany(p => p.Inscripcions)
+            entity.HasOne(d => d.Curso).WithMany(p => p.Inscripciones)
                 .HasForeignKey(d => d.IdCurso)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Inscripci__id_cu__47DBAE45");
 
-            entity.HasOne(d => d.IdEstudianteNavigation).WithMany(p => p.Inscripcions)
+            entity.HasOne(d => d.Estudiante).WithMany(p => p.Inscripciones)
                 .HasForeignKey(d => d.IdEstudiante)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("FK__Inscripci__id_es__46E78A0C");
