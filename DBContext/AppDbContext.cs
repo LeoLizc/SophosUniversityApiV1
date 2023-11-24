@@ -18,11 +18,11 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Estudiante> Estudiantes { get; set; }
 
-    public virtual DbSet<Facultad> Facultads { get; set; }
+    public virtual DbSet<Facultad> Facultades { get; set; }
 
-    public virtual DbSet<Inscripcion> Inscripcions { get; set; }
+    public virtual DbSet<Inscripcion> Inscripciones { get; set; }
 
-    public virtual DbSet<Profesor> Profesors { get; set; }
+    public virtual DbSet<Profesor> Profesores { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

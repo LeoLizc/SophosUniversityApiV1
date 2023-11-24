@@ -25,22 +25,22 @@ namespace SophosUniversityApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Inscripcion>>> GetInscripcions()
         {
-          if (_context.Inscripcions == null)
+          if (_context.Inscripciones == null)
           {
               return NotFound();
           }
-            return await _context.Inscripcions.ToListAsync();
+            return await _context.Inscripciones.ToListAsync();
         }
 
         // GET: api/Inscripciones/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Inscripcion>> GetInscripcion(int id)
         {
-          if (_context.Inscripcions == null)
+          if (_context.Inscripciones == null)
           {
               return NotFound();
           }
-            var inscripcion = await _context.Inscripcions.FindAsync(id);
+            var inscripcion = await _context.Inscripciones.FindAsync(id);
 
             if (inscripcion == null)
             {
@@ -86,11 +86,11 @@ namespace SophosUniversityApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Inscripcion>> PostInscripcion(Inscripcion inscripcion)
         {
-          if (_context.Inscripcions == null)
+          if (_context.Inscripciones == null)
           {
               return Problem("Entity set 'AppDbContext.Inscripcions'  is null.");
           }
-            _context.Inscripcions.Add(inscripcion);
+            _context.Inscripciones.Add(inscripcion);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetInscripcion", new { id = inscripcion.IdInscripcion }, inscripcion);
@@ -100,17 +100,17 @@ namespace SophosUniversityApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteInscripcion(int id)
         {
-            if (_context.Inscripcions == null)
+            if (_context.Inscripciones == null)
             {
                 return NotFound();
             }
-            var inscripcion = await _context.Inscripcions.FindAsync(id);
+            var inscripcion = await _context.Inscripciones.FindAsync(id);
             if (inscripcion == null)
             {
                 return NotFound();
             }
 
-            _context.Inscripcions.Remove(inscripcion);
+            _context.Inscripciones.Remove(inscripcion);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace SophosUniversityApi.Controllers
 
         private bool InscripcionExists(int id)
         {
-            return (_context.Inscripcions?.Any(e => e.IdInscripcion == id)).GetValueOrDefault();
+            return (_context.Inscripciones?.Any(e => e.IdInscripcion == id)).GetValueOrDefault();
         }
     }
 }

@@ -25,22 +25,22 @@ namespace SophosUniversityApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Profesor>>> GetProfesors()
         {
-          if (_context.Profesors == null)
+          if (_context.Profesores == null)
           {
               return NotFound();
           }
-            return await _context.Profesors.ToListAsync();
+            return await _context.Profesores.ToListAsync();
         }
 
         // GET: api/Profesores/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Profesor>> GetProfesor(int id)
         {
-          if (_context.Profesors == null)
+          if (_context.Profesores == null)
           {
               return NotFound();
           }
-            var profesor = await _context.Profesors.FindAsync(id);
+            var profesor = await _context.Profesores.FindAsync(id);
 
             if (profesor == null)
             {
@@ -86,11 +86,11 @@ namespace SophosUniversityApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Profesor>> PostProfesor(Profesor profesor)
         {
-          if (_context.Profesors == null)
+          if (_context.Profesores == null)
           {
               return Problem("Entity set 'AppDbContext.Profesors'  is null.");
           }
-            _context.Profesors.Add(profesor);
+            _context.Profesores.Add(profesor);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetProfesor", new { id = profesor.IdProfesor }, profesor);
@@ -100,17 +100,17 @@ namespace SophosUniversityApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteProfesor(int id)
         {
-            if (_context.Profesors == null)
+            if (_context.Profesores == null)
             {
                 return NotFound();
             }
-            var profesor = await _context.Profesors.FindAsync(id);
+            var profesor = await _context.Profesores.FindAsync(id);
             if (profesor == null)
             {
                 return NotFound();
             }
 
-            _context.Profesors.Remove(profesor);
+            _context.Profesores.Remove(profesor);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace SophosUniversityApi.Controllers
 
         private bool ProfesorExists(int id)
         {
-            return (_context.Profesors?.Any(e => e.IdProfesor == id)).GetValueOrDefault();
+            return (_context.Profesores?.Any(e => e.IdProfesor == id)).GetValueOrDefault();
         }
     }
 }

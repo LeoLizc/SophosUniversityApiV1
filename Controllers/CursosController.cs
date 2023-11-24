@@ -10,115 +10,128 @@ using SophosUniversityApi.Models;
 
 namespace SophosUniversityApi.Controllers
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class CursosController : ControllerBase
-    {
-        private readonly AppDbContext _context;
+	[Route("api/[controller]")]
+	[ApiController]
+	public class CursosController : ControllerBase
+	{
+		private readonly AppDbContext _context;
 
-        public CursosController(AppDbContext context)
-        {
-            _context = context;
-        }
+		public CursosController(AppDbContext context)
+		{
+			_context = context;
+		}
 
-        // GET: api/Cursos
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Curso>>> GetCursos()
-        {
-          if (_context.Cursos == null)
-          {
-              return NotFound();
-          }
-            return await _context.Cursos.ToListAsync();
-        }
+		// GET: api/Cursos
+		[HttpGet]
+		public async Task<ActionResult<IEnumerable<Curso>>> GetCursos(
+			[FromQuery(Name = "nombre")] string? nombre,//* Filtra por el nombre del estudiante
+			[FromQuery(Name = "cupos")] bool? cupos//* Filtra los cursos con cupos disponibles
+		)
+		{
+			if (_context.Cursos == null)
+			{
+				return NotFound();
+			}
+			var cursos = _context.Cursos.AsQueryable();
 
-        // GET: api/Cursos/5
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Curso>> GetCurso(int id)
-        {
-          if (_context.Cursos == null)
-          {
-              return NotFound();
-          }
-            var curso = await _context.Cursos.FindAsync(id);
+			if (nombre != null)
+			{
+				cursos = cursos.Where(c => c.Asignatura.Nombre.Contains(nombre));
+			}
 
-            if (curso == null)
-            {
-                return NotFound();
-            }
+			if (cupos != null)
+			{
+				cursos = cursos.Where(c => c.Cupos - _context.Inscripciones );
+			}
+		}
 
-            return curso;
-        }
+		// GET: api/Cursos/5
+		[HttpGet("{id}")]
+		public async Task<ActionResult<Curso>> GetCurso(int id)
+		{
+			if (_context.Cursos == null)
+			{
+				return NotFound();
+			}
+			var curso = await _context.Cursos.FindAsync(id);
 
-        // PUT: api/Cursos/5
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPut("{id}")]
-        public async Task<IActionResult> PutCurso(int id, Curso curso)
-        {
-            if (id != curso.IdCurso)
-            {
-                return BadRequest();
-            }
+			if (curso == null)
+			{
+				return NotFound();
+			}
 
-            _context.Entry(curso).State = EntityState.Modified;
+			return curso;
+		}
 
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!CursoExists(id))
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
+		// PUT: api/Cursos/5
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPut("{id}")]
+		public async Task<IActionResult> PutCurso(int id, Curso curso)
+		{
+			if (id != curso.IdCurso)
+			{
+				return BadRequest();
+			}
 
-            return NoContent();
-        }
+			_context.Entry(curso).State = EntityState.Modified;
 
-        // POST: api/Cursos
-        // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-        [HttpPost]
-        public async Task<ActionResult<Curso>> PostCurso(Curso curso)
-        {
-          if (_context.Cursos == null)
-          {
-              return Problem("Entity set 'AppDbContext.Cursos'  is null.");
-          }
-            _context.Cursos.Add(curso);
-            await _context.SaveChangesAsync();
+			try
+			{
+				await _context.SaveChangesAsync();
+			}
+			catch (DbUpdateConcurrencyException)
+			{
+				if (!CursoExists(id))
+				{
+					return NotFound();
+				}
+				else
+				{
+					throw;
+				}
+			}
 
-            return CreatedAtAction("GetCurso", new { id = curso.IdCurso }, curso);
-        }
+			return NoContent();
+		}
 
-        // DELETE: api/Cursos/5
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteCurso(int id)
-        {
-            if (_context.Cursos == null)
-            {
-                return NotFound();
-            }
-            var curso = await _context.Cursos.FindAsync(id);
-            if (curso == null)
-            {
-                return NotFound();
-            }
+		// POST: api/Cursos
+		// To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
+		[HttpPost]
+		public async Task<ActionResult<Curso>> PostCurso(Curso curso)
+		{
+			if (_context.Cursos == null)
+			{
+				return Problem("Entity set 'AppDbContext.Cursos'  is null.");
+			}
+			_context.Cursos.Add(curso);
+			await _context.SaveChangesAsync();
 
-            _context.Cursos.Remove(curso);
-            await _context.SaveChangesAsync();
+			return CreatedAtAction("GetCurso", new { id = curso.IdCurso }, curso);
+		}
 
-            return NoContent();
-        }
+		// DELETE: api/Cursos/5
+		[HttpDelete("{id}")]
+		public async Task<IActionResult> DeleteCurso(int id)
+		{
+			if (_context.Cursos == null)
+			{
+				return NotFound();
+			}
+			var curso = await _context.Cursos.FindAsync(id);
+			if (curso == null)
+			{
+				return NotFound();
+			}
 
-        private bool CursoExists(int id)
-        {
-            return (_context.Cursos?.Any(e => e.IdCurso == id)).GetValueOrDefault();
-        }
-    }
+			_context.Cursos.Remove(curso);
+			await _context.SaveChangesAsync();
+
+			return NoContent();
+		}
+
+		private bool CursoExists(int id)
+		{
+			return (_context.Cursos?.Any(e => e.IdCurso == id)).GetValueOrDefault();
+		}
+	}
 }

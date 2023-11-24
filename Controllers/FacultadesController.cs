@@ -25,22 +25,22 @@ namespace SophosUniversityApi.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Facultad>>> GetFacultads()
         {
-          if (_context.Facultads == null)
+          if (_context.Facultades == null)
           {
               return NotFound();
           }
-            return await _context.Facultads.ToListAsync();
+            return await _context.Facultades.ToListAsync();
         }
 
         // GET: api/Facultades/5
         [HttpGet("{id}")]
         public async Task<ActionResult<Facultad>> GetFacultad(int id)
         {
-          if (_context.Facultads == null)
+          if (_context.Facultades == null)
           {
               return NotFound();
           }
-            var facultad = await _context.Facultads.FindAsync(id);
+            var facultad = await _context.Facultades.FindAsync(id);
 
             if (facultad == null)
             {
@@ -86,11 +86,11 @@ namespace SophosUniversityApi.Controllers
         [HttpPost]
         public async Task<ActionResult<Facultad>> PostFacultad(Facultad facultad)
         {
-          if (_context.Facultads == null)
+          if (_context.Facultades == null)
           {
               return Problem("Entity set 'AppDbContext.Facultads'  is null.");
           }
-            _context.Facultads.Add(facultad);
+            _context.Facultades.Add(facultad);
             await _context.SaveChangesAsync();
 
             return CreatedAtAction("GetFacultad", new { id = facultad.IdFacultad }, facultad);
@@ -100,17 +100,17 @@ namespace SophosUniversityApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteFacultad(int id)
         {
-            if (_context.Facultads == null)
+            if (_context.Facultades == null)
             {
                 return NotFound();
             }
-            var facultad = await _context.Facultads.FindAsync(id);
+            var facultad = await _context.Facultades.FindAsync(id);
             if (facultad == null)
             {
                 return NotFound();
             }
 
-            _context.Facultads.Remove(facultad);
+            _context.Facultades.Remove(facultad);
             await _context.SaveChangesAsync();
 
             return NoContent();
@@ -118,7 +118,7 @@ namespace SophosUniversityApi.Controllers
 
         private bool FacultadExists(int id)
         {
-            return (_context.Facultads?.Any(e => e.IdFacultad == id)).GetValueOrDefault();
+            return (_context.Facultades?.Any(e => e.IdFacultad == id)).GetValueOrDefault();
         }
     }
 }
