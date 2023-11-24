@@ -39,15 +39,13 @@ CREATE TABLE Asignatura(
 
 CREATE TABLE Curso(
     id_curso INT IDENTITY(1,1) PRIMARY KEY,
-    nombre VARCHAR(50) NOT NULL,
     periodo VARCHAR(50) NOT NULL,
     cupos INT NOT NULL,
-    cupos_disponibles INT NOT NULL,
     id_asignatura INT NOT NULL,
     id_profesor INT NOT NULL,
+    activo BIT NOT NULL DEFAULT 1,
     FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura),
-    FOREIGN KEY (id_profesor) REFERENCES Profesor(id_profesor),
-    CHECK (cupos_disponibles <= cupos)
+    FOREIGN KEY (id_profesor) REFERENCES Profesor(id_profesor)
 );
 
 CREATE TABLE Inscripcion(
@@ -57,3 +55,5 @@ CREATE TABLE Inscripcion(
     FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
     FOREIGN KEY (id_curso) REFERENCES Curso(id_curso)
 );
+
+GO

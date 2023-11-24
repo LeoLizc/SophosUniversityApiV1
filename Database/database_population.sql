@@ -1,3 +1,6 @@
+USE Sophos_university;
+GO
+
 -- Populate Profesor table
 INSERT INTO Profesor (nombre, titulo_maximo, anios_experiencia) VALUES
     ('Dana Neal', 'Doctorado en Matemáticas', 10),
@@ -24,13 +27,17 @@ INSERT INTO Asignatura (nombre, creditos, id_facultad, id_pre_requisito) VALUES
 
 
 -- Populate Curso table
-INSERT INTO Curso (nombre, periodo, cupos, cupos_disponibles, id_asignatura, id_profesor) VALUES
-    ('Curso A', '2023-1', 30, 29, 1, 1),
-    ('Curso B', '2023-2', 25, 24, 2, 2),
-    ('Curso C', '2023-1', 20, 19, 3, 3);
+INSERT INTO Curso (periodo, cupos, id_asignatura, id_profesor, activo) VALUES
+    ('2023-1', 5, 1, 1, 0),
+    ('2023-2', 30, 1, 1, DEFAULT),
+    ('2023-2', 25, 2, 2, DEFAULT),
+    ('2023-2', 20, 3, 3, DEFAULT);
 
 -- Populate Inscripcion table
 INSERT INTO Inscripcion (id_estudiante, id_curso) VALUES
     (1, 1),
     (2, 2),
+    (3, 1),
     (3, 3);
+
+GO
