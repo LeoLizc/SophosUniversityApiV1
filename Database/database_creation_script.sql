@@ -21,7 +21,6 @@ CREATE TABLE Estudiante(
     id_estudiante INT IDENTITY(1,1) PRIMARY KEY,
     nombre VARCHAR(50) NOT NULL,
     edad INT NOT NULL,
-    creditos_inscritos INT NOT NULL,
     semestre_actual INT NOT NULL,
     id_facultad INT NOT NULL,
     FOREIGN KEY (id_facultad) REFERENCES Facultad(id_facultad)
