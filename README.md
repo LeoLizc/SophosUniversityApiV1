@@ -27,6 +27,7 @@ docker-compose up --build
 ```
 
 Este comando creará los contenedores necesarios para la ejecución del proyecto, y expondrá el puerto 5189 para la comunicación con la Api y el puerto 1433 para la comunicación con la base de datos.
+Normalmente la base de datos se tarda unos 20 segundos en ejecutar el proceso de población, por lo que recomiendo esperar antes de empezar a usar la api.
 
 ### Endpoints
 Puede encontrar la documentación e información sobre el uso de los endpoints accediendo a la ruta: ```/swagger/index.html```
