@@ -73,17 +73,9 @@ namespace SophosUniversityApi.Controllers
 				asignatura.IdAsignatura,
 				asignatura.Nombre,
 				asignatura.Creditos,
-				asignatura.Facultad.Nombre,
+				_context.Facultades.Find(asignatura.IdFacultad).Nombre,
 				asignatura.PreRequisito?.Nombre,
-				asignatura.Cursos.Select(
-					c => new CursoDTO(
-						c.IdCurso,
-						c.Asignatura.Nombre,
-						c.Asignatura.PreRequisito?.Nombre ?? "",
-						c.Asignatura.Creditos,
-						c.Cupos - c.Inscripciones.Count()
-					)
-				).ToList()
+				_context.Cursos.Where(c=>c.IdAsignatura == asignatura.IdAsignatura).ToList()
 			);
 		}
 
@@ -165,7 +157,7 @@ namespace SophosUniversityApi.Controllers
 				return Problem(e.Message);
 			}
 
-			return CreatedAtAction("GetAsignatura", new { id = nuevaAsignatura.IdAsignatura }, nuevaAsignatura);
+			return CreatedAtAction(nameof(PostAsignatura), new { id = nuevaAsignatura.IdAsignatura }, nuevaAsignatura);
 		}
 
 		// DELETE: api/Asignaturas/5

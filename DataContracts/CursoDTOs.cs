@@ -20,10 +20,11 @@ namespace SophosUniversityApi.DataContracts
 
 	public record CursoDTO(
 		int IdCurso,
-		string Nombre,
-		string PreRequisito,
+		string Asignatura,
+		string? PreRequisito,
 		int Creditos,
-		int CuposDisponibles
+		int CuposDisponibles,
+		bool Activo
 	);
 
 	public record CursoDetailDTO(

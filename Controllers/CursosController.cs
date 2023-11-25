@@ -29,7 +29,8 @@ namespace SophosUniversityApi.Controllers
 		[ProducesResponseType(StatusCodes.Status500InternalServerError)]
 		public async Task<ActionResult<IEnumerable<CursoDTO>>> GetCursos(
 			[FromQuery(Name = "nombre")] string? nombre,//* Filtra por el nombre del estudiante
-			[FromQuery(Name = "cupos")] bool? cupos//* Filtra los cursos con cupos disponibles
+			[FromQuery(Name = "cupos")] bool? cupos,//* Filtra los cursos con cupos disponibles
+			[FromQuery(Name = "activo")] bool? activo//* Filtra los cursos activos
 		)
 		{
 			if (_context.Cursos == null)
@@ -40,7 +41,7 @@ namespace SophosUniversityApi.Controllers
 
 			if (nombre != null)
 			{
-				cursos = cursos.Where(c => c.Asignatura.Nombre.Contains(nombre)).ToList();
+				cursos = cursos.Where(c => _context.Asignaturas.Find(c.IdAsignatura)!.Nombre.Contains(nombre)).ToList();
 			}
 
 			if (cupos != null)
@@ -50,14 +51,23 @@ namespace SophosUniversityApi.Controllers
 				).ToList();
 			}
 
+			if (activo != null)
+			{
+				cursos = cursos.Where(c => c.Activo == activo).ToList();
+			}
+
 			var result = cursos.Select(
-				c => new CursoDTO(
-					c.IdCurso,
-					c.Asignatura.Nombre,
-					c.Asignatura.PreRequisito?.Nombre ?? "",
-					c.Asignatura.Creditos,
-					c.Cupos - _context.Inscripciones.Where(ins => ins.IdCurso == c.IdCurso).Count()
-				)
+				c => {
+					var asignatura  = _context.Asignaturas.Find(c.IdAsignatura);
+					return new CursoDTO(
+						c.IdCurso,
+						asignatura!.Nombre,
+						asignatura.PreRequisito?.Nombre ?? "",
+						asignatura.Creditos,
+						c.Cupos - _context.Inscripciones.Where(ins => ins.IdCurso == c.IdCurso).Count(),
+						c.Activo ?? false
+					);
+				}
 			);
 
 			return Ok(result);
@@ -81,14 +91,16 @@ namespace SophosUniversityApi.Controllers
 				return NotFound();
 			}
 
+			var asignatura = _context.Asignaturas.Find(curso.IdAsignatura);
+
 			var result = new CursoDetailDTO(
 				curso.IdCurso,
 				curso.Periodo,
 				curso.Activo ?? false,
-				curso.Asignatura.Nombre,
+				asignatura!.Nombre,
 				_context.Inscripciones.Where(ins => ins.IdCurso == curso.IdCurso).Count(),
-				curso.Profesor.Nombre,
-				curso.Asignatura.Creditos,
+				_context.Profesores.Find(curso.IdProfesor)!.Nombre,
+				asignatura.Creditos,
 				_context.Inscripciones.Where(ins => ins.IdCurso == curso.IdCurso).Select(ins => ins.Estudiante.Nombre).ToList()
 			);
 
@@ -115,6 +127,12 @@ namespace SophosUniversityApi.Controllers
 			{
 				return NotFound();
 			}
+
+			cursoToUpdate.Periodo = curso.Periodo ?? cursoToUpdate.Periodo;
+			cursoToUpdate.Activo = curso.Activo ?? cursoToUpdate.Activo;
+			cursoToUpdate.Cupos = curso.Cupos ?? cursoToUpdate.Cupos;
+			cursoToUpdate.IdAsignatura = curso.IdAsignatura ?? cursoToUpdate.IdAsignatura;
+			cursoToUpdate.IdProfesor = curso.IdProfesor ?? cursoToUpdate.IdProfesor;
 
 			_context.Entry(cursoToUpdate).State = EntityState.Modified;
 
@@ -162,7 +180,7 @@ namespace SophosUniversityApi.Controllers
 			_context.Cursos.Add(nuevoCurso);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetCurso", new { id = nuevoCurso.IdCurso }, nuevoCurso);
+			return CreatedAtAction(nameof(PostCurso), new { id = nuevoCurso.IdCurso }, nuevoCurso);
 		}
 
 		// DELETE: api/Cursos/5

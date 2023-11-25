@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using SophosUniversityApi.Models;
+using System.ComponentModel.DataAnnotations;
 
 namespace SophosUniversityApi.DataContracts
 {
@@ -28,6 +29,6 @@ namespace SophosUniversityApi.DataContracts
 		int Creditos,
 		string Facultad,
 		string? PreRequisito,
-		List<CursoDTO> Cursos
+		List<Curso> Cursos
 	);
 }
