@@ -44,7 +44,7 @@ namespace SophosUniversityApi.Controllers
 			_context.Inscripciones.Add(newInscripcion);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetInscripcion", new { id = newInscripcion.IdInscripcion }, newInscripcion);
+			return CreatedAtAction(nameof(PostInscripcion), new { id = newInscripcion.IdInscripcion }, newInscripcion);
 		}
 
 		// DELETE: api/Inscripciones/5

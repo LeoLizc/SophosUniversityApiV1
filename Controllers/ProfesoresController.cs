@@ -50,7 +50,7 @@ namespace SophosUniversityApi.Controllers
 						prof.Nombre,
 						prof.TituloMaximo,
 						prof.AniosExperiencia,
-						prof.Cursos.Select(cu => cu.Asignatura.Nombre).ToList()
+						_context.Cursos.Where(c => c.IdProfesor == prof.IdProfesor).Select(cu => cu.Asignatura.Nombre).ToList()
 					)
 				);
 				return Ok(result);
@@ -128,7 +128,7 @@ namespace SophosUniversityApi.Controllers
 				await _context.SaveChangesAsync();
 
 				return CreatedAtAction(
-					"GetProfesor",
+					nameof(GetProfesores),
 					newProfesor
 				);
 			}

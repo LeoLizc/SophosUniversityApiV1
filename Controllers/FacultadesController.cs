@@ -42,7 +42,14 @@ namespace SophosUniversityApi.Controllers
 				facultades = facultades.Where(p => p.Nombre.Contains(nombre)).ToList();
 			}
 
-			return facultades;
+			facultades = facultades.Select(
+				(f) => {
+					f.Estudiantes = _context.Estudiantes.Where(e => e.IdFacultad == f.IdFacultad).ToList();
+					return f; 
+				}
+			).ToList();
+
+			return Ok(facultades);
 		}
 
 		// GET: api/Facultades/5
@@ -63,6 +70,7 @@ namespace SophosUniversityApi.Controllers
 				return NotFound();
 			}
 
+			facultad.Estudiantes = _context.Estudiantes.Where(e => e.IdFacultad == facultad.IdFacultad).ToList();
 			return facultad;
 		}
 
@@ -129,7 +137,7 @@ namespace SophosUniversityApi.Controllers
 			_context.Facultades.Add(nuevaFacultad);
 			await _context.SaveChangesAsync();
 
-			return CreatedAtAction("GetFacultad", new { id = nuevaFacultad.IdFacultad }, nuevaFacultad);
+			return CreatedAtAction(nameof(PostFacultad), new { id = nuevaFacultad.IdFacultad }, nuevaFacultad);
 		}
 
 		// DELETE: api/Facultades/5

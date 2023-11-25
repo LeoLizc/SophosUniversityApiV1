@@ -39,28 +39,35 @@ namespace SophosUniversityApi.Controllers
 			
 			var estudiantes = await _context.Estudiantes.ToListAsync();
 			
+			if (estudiantes == null)
+			{
+				return NotFound();
+			}
+
 			if (nombre != null)
 			{
 				estudiantes = estudiantes.Where(e => e.Nombre.Contains(nombre)).ToList();
 			}
 			if (facultad != null)
 			{
-				estudiantes = estudiantes.Where(e => e.Facultad.Nombre.Contains(facultad)).ToList();
+				estudiantes = estudiantes.Where(e => _context.Facultades.Find(e.IdFacultad)!.Nombre.Contains(facultad)).ToList();
 			}
 
-			return Ok(
-				estudiantes.Select(
-					est => new EstudianteDTO(
-						est.IdEstudiante,
-						est.Nombre,
-						est.Facultad.Nombre,
-						_context.Inscripciones.Where(
-							ins => ins.IdEstudiante == est.IdEstudiante
-									&& ins.Curso.Activo == true
-						).Sum(ins => ins.Curso.Asignatura.Creditos),
-						est.Edad
-					)
+			var result = estudiantes.Select(
+				est => new EstudianteDTO(
+					est.IdEstudiante,
+					est.Nombre,
+					_context.Facultades.Find(est.IdFacultad).Nombre,
+					_context.Inscripciones.Where(
+						ins => ins.IdEstudiante == est.IdEstudiante
+							&& ins.Curso.Activo == true
+					).Sum(ins => ins.Curso.Asignatura.Creditos),
+					est.Edad
 				)
+			);
+
+			return Ok(
+				result
 			);
 		}
 
@@ -85,7 +92,7 @@ namespace SophosUniversityApi.Controllers
 			var result = new EstudianteDetailDTO(
 				estudiante.IdEstudiante,
 				estudiante.Nombre,
-				estudiante.Facultad.IdFacultad,
+				_context.Facultades.Find(estudiante.IdFacultad).IdFacultad,
 				_context.Inscripciones.Where(
 					ins => ins.IdEstudiante == estudiante.IdEstudiante
 							&& ins.Curso.Activo == true
@@ -120,6 +127,11 @@ namespace SophosUniversityApi.Controllers
 			{
 				return NotFound();
 			}
+
+			estudiantePorActualizar.Nombre = estudiante.Nombre ?? estudiantePorActualizar.Nombre;
+			estudiantePorActualizar.IdFacultad = estudiante.IdFacultad ?? estudiantePorActualizar.IdFacultad;
+			estudiantePorActualizar.SemestreActual = estudiante.Semestre ?? estudiantePorActualizar.SemestreActual;
+			estudiantePorActualizar.Edad = estudiante.Edad ?? estudiantePorActualizar.Edad;
 
 			_context.Entry(estudiantePorActualizar).State = EntityState.Modified;
 
@@ -171,7 +183,7 @@ namespace SophosUniversityApi.Controllers
 			{
 				return Problem("Problema al crear el estudiante.");
 			}
-			return CreatedAtAction("GetEstudiante", new { id = nuevoEstudiante.IdEstudiante }, nuevoEstudiante);
+			return CreatedAtAction(nameof(PostEstudiante), new { id = nuevoEstudiante.IdEstudiante }, nuevoEstudiante);
 		}
 
 		// DELETE: api/Estudiantes/5
