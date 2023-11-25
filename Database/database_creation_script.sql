@@ -32,8 +32,10 @@ CREATE TABLE Asignatura(
     creditos INT NOT NULL,
     id_facultad INT NOT NULL,
     id_pre_requisito INT,
-    FOREIGN KEY (id_facultad) REFERENCES Facultad(id_facultad),
+    FOREIGN KEY (id_facultad) REFERENCES Facultad(id_facultad)
+    ON DELETE CASCADE,
     FOREIGN KEY (id_pre_requisito) REFERENCES Asignatura(id_asignatura)
+    ON DELETE NO ACTION
 );
 
 CREATE TABLE Curso(
@@ -43,16 +45,20 @@ CREATE TABLE Curso(
     id_asignatura INT NOT NULL,
     id_profesor INT NOT NULL,
     activo BIT NOT NULL DEFAULT 1,
-    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura),
+    FOREIGN KEY (id_asignatura) REFERENCES Asignatura(id_asignatura)
+    ON DELETE CASCADE,
     FOREIGN KEY (id_profesor) REFERENCES Profesor(id_profesor)
+    ON DELETE CASCADE,
 );
 
 CREATE TABLE Inscripcion(
     id_inscripcion INT IDENTITY(1,1) PRIMARY KEY,
     id_estudiante INT NOT NULL,
     id_curso INT NOT NULL,
-    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante),
+    FOREIGN KEY (id_estudiante) REFERENCES Estudiante(id_estudiante)
+    ON DELETE CASCADE,
     FOREIGN KEY (id_curso) REFERENCES Curso(id_curso)
+    ON DELETE CASCADE
 );
 
 GO

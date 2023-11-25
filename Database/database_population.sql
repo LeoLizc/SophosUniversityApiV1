@@ -16,8 +16,8 @@ INSERT INTO Facultad (nombre) VALUES
 -- Populate Estudiante table
 INSERT INTO Estudiante (nombre, edad, semestre_actual, id_facultad) VALUES
     ('Luis Miguel Lopez', 20, 3, 1),
-    ('Juan Montero', 22, 45, 2),
-    ('Miguel Dubán', 21, 35, 3);
+    ('Juan Montero', 22, 5, 2),
+    ('Miguel Dubán', 21, 7, 3);
 
 -- Populate Asignatura table
 INSERT INTO Asignatura (nombre, creditos, id_facultad, id_pre_requisito) VALUES
